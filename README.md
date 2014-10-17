@@ -8,6 +8,7 @@ Support from inside the List&lt;POJO and List&lt;POJO&gt; inside&gt; import and 
 To support the export of similar curriculum structure type cross table.<br/>
 Support for Internationalization.<br/>
 Don't write a configuration file.<br/>
+Use the adapter pattern, data import and export support arbitrary types, users can also write your own adapter custom data types!<br/>
 Example please refer to: test package.<br/>
 <br/>
 <br/>
@@ -18,6 +19,7 @@ Example please refer to: test package.<br/>
 支持导出类似课程表结构类型纵表.<br/>
 支持国际化.<br/>
 不写一个配置文件.<br/>
+用到了适配器模式，支持任意类型的数据导入导出，用户还可以自己编写适配器操作自定义的数据类型！
 <br/>
 示例请参照：<br/>
 public class TestExcel {
