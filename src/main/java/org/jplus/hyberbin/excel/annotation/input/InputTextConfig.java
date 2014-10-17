@@ -1,0 +1,42 @@
+/*
+ * Copyright 2014 Hyberbin.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * Email:hyberbin@qq.com
+ */
+package org.jplus.hyberbin.excel.annotation.input;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Created by Hyberbin on 2014/6/19.
+ */
+@Target(ElementType.FIELD)//该注解只能用在成员变量上
+@Retention(RetentionPolicy.RUNTIME)
+public @interface InputTextConfig {
+    /**导入数据转换器执行的方法*/
+    String method() default "inputTextAdapter";
+    /**是否允许为空*/
+    boolean nullAble() default true;
+    /**是否默认继承上一行的值*/
+    boolean defaultByUp() default false;
+    /**最大长度*/
+    int maxLength() default 0;
+    /**最小长度*/
+    int minLength() default 0;
+    /**正则表达式*/
+    String regx() default "";
+}
