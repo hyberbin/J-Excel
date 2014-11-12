@@ -48,6 +48,7 @@ public class ExportTableService extends BaseExcelService {
         log.debug("初始化单元格总共:{}行，{}列",tableBean.getRowCount(),tableBean.getColumnCount());
         for(int r=0;r<tableBean.getRowCount();r++){
             Row row = sheet.createRow(r);
+            row.setHeight((short) tableBean.getRowHeight());
             for(int c=0;c<tableBean.getColumnCount();c++){
                 row.createCell(c);
             }
@@ -67,13 +68,17 @@ public class ExportTableService extends BaseExcelService {
                 Cell cell = sheet.getRow(cellBean.getRowIndex()).getCell(cellBean.getColumnIndex());
                 cell.setCellValue(cellBean.getContent());
                 CellStyle cellStyle = cell.getCellStyle();
-                if(cellStyle==null)sheet.getWorkbook().createCellStyle();
+                if(cellStyle==null){
+                    cellStyle=sheet.getWorkbook().createCellStyle();
+                }
                 if(cellBean.isAlignCenter()){
                     cellStyle.setAlignment(CellStyle.ALIGN_CENTER);//水平居中
                 }
                 if(cellBean.isVerticalCenter()){
                     cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);//垂直居中
                 }
+                cellStyle.setWrapText(cellBean.isWrapText());
+                cell.setCellStyle(cellStyle);
             }
         }
     }

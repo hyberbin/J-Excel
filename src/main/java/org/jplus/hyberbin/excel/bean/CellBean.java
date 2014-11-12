@@ -35,6 +35,8 @@ public class CellBean {
     private boolean alignCenter=true;
     /**垂直居中*/
     private boolean verticalCenter=true;
+    /**自动换行*/
+    private boolean wrapText=true;
 
     public CellBean(String content, int rowIndex, int columnIndex) {
         this.content = content;
@@ -123,4 +125,13 @@ public class CellBean {
     public void setySize(int ySize) {
         this.ySize = ySize;
     }
+
+    public boolean isWrapText() {
+        return wrapText;
+    }
+
+    public void setWrapText(boolean wrapText) {
+        this.wrapText = wrapText;
+    }
+    
 }
