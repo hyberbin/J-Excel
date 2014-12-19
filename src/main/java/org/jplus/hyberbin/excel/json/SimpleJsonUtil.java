@@ -16,12 +16,11 @@
  */
 package org.jplus.hyberbin.excel.json;
 
-import java.lang.reflect.Field;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.List;
-import org.jplus.hyberbin.excel.utils.ConverString;
-import org.jplus.hyberbin.excel.utils.Reflections;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,39 +31,71 @@ import org.slf4j.LoggerFactory;
 public class SimpleJsonUtil implements IJsonUtil {
 
     private static final Logger log = LoggerFactory.getLogger(SimpleJsonUtil.class);
+    public static final JsonUtil IN_STANCE = new JsonUtil();
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final String NULL_STRING = "";
 
-    @Override
-    public String toJSON(Object o) {
-        return new JSONObject(o).toString();
+    /**
+     * 把 json 字符串转换为List对象
+     *
+     * @param jsonString  json 字符串
+     * @param elementType list 元素的类型
+     * @param <T>         list 元素类型
+     * @return list
+     */
+    public static <T> List<T> toList(String jsonString, Class<T> elementType) {
+        try {
+            return mapper.readValue(jsonString, mapper.getTypeFactory().constructCollectionType(List.class, elementType));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 把 json 字符串转换为Map对象
+     *
+     * @param jsonString json 字符串
+     * @param keyType    键类型
+     * @param valueType  值类型
+     * @param <T1>       键类型
+     * @param <T2>       值类型
+     * @return map
+     */
+    public static <T1, T2> Map<T1, T2> toMap(String jsonString, Class<T1> keyType, Class<T2> valueType) {
+        try {
+            return mapper.readValue(jsonString, mapper.getTypeFactory().constructMapType(Map.class, keyType, valueType));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
-    public <T> T toObject(String s, Class type) {
+    public String toJSON(Object object) {
         try {
-            JSONObject json = new JSONObject(s);
-            log.trace("instance for class:{}", type.getName());
-            Object object = Reflections.instance(type.getName());
-            List<Field> fields = Reflections.getAllFields(object);
-            for (Field field : fields) {
-                log.trace("try to set field value for field:{}", field.getName());
-                Object value = json.getString(field.getName());
-                if (value == null) {
-                    continue;
-                }
-                if (!value.getClass().isAssignableFrom(field.getType())) {
-                    value = ConverString.asType(field.getType(), value);
-                }
-                if (value == null) {
-                    continue;
-                }
-                log.trace("set field value :{}", value);
-                Reflections.invokeSetter(object, field.getName(), value,field.getType());
-            }
-            return (T) object;
-        } catch (JSONException ex) {
-            log.error("toObject error!", ex);
-            return null;
+            return mapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
+        return NULL_STRING;
+    }
+
+    /**
+     *
+     * @param <T>
+     * @param jsonString
+     * @param requiredType
+     * @return
+     */
+    @Override
+    public <T> T toObject(String jsonString, Class requiredType) {
+        try {
+            return (T) mapper.readValue(jsonString, requiredType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
