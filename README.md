@@ -27,6 +27,7 @@ Example please refer to: test package.<br/>
 用到了适配器模式，支持任意类型的数据导入导出，用户还可以自己编写适配器操作自定义的数据类型！
 <br/>
 示例请参照：<br/>
+```java
 public class TestExcel {
 
     static {
@@ -198,3 +199,4 @@ public class TestExcel {
         workbook.write(new FileOutputStream("D:\\excel.xls"));
     }
 }
+```
