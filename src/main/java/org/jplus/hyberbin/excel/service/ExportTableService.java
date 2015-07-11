@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Hyberbin.
+ * Copyright 2015 www.hyberbin.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  */
 package org.jplus.hyberbin.excel.service;
 
-import java.util.Collection;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,6 +25,8 @@ import org.jplus.hyberbin.excel.bean.CellBean;
 import org.jplus.hyberbin.excel.bean.TableBean;
 import org.jplus.hyberbin.excel.json.JsonUtil;
 import org.jplus.hyberbin.excel.utils.ObjectHelper;
+
+import java.util.Collection;
 
 /**
  * 导出一个表格
@@ -48,7 +49,9 @@ public class ExportTableService extends BaseExcelService {
         log.debug("初始化单元格总共:{}行，{}列",tableBean.getRowCount(),tableBean.getColumnCount());
         for(int r=0;r<tableBean.getRowCount();r++){
             Row row = sheet.createRow(r);
-            row.setHeight((short) tableBean.getRowHeight());
+            if(tableBean.getRowHeight()>0){
+                row.setHeight((short) tableBean.getRowHeight());
+            }
             for(int c=0;c<tableBean.getColumnCount();c++){
                 row.createCell(c);
             }

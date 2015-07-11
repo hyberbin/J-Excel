@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Hyberbin.
+ * Copyright 2015 www.hyberbin.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,9 @@
  */
 package org.jplus.hyberbin.excel;
 
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.jplus.hyb.database.bean.FieldColumn;
-import org.jplus.hyb.database.config.DbConfig;
-import org.jplus.hyb.database.config.SimpleConfigurator;
-import org.jplus.hyb.database.crud.Hyberbin;
 import org.jplus.hyberbin.excel.bean.CellBean;
 import org.jplus.hyberbin.excel.bean.GroupConfig;
 import org.jplus.hyberbin.excel.bean.TableBean;
@@ -36,60 +26,103 @@ import org.jplus.hyberbin.excel.service.ExportExcelService;
 import org.jplus.hyberbin.excel.service.ExportTableService;
 import org.jplus.hyberbin.excel.service.ImportExcelService;
 import org.jplus.hyberbin.excel.service.SimpleExportService;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.*;
 
 /**
  *
  * @author Hyberbin
  */
 public class TestExcel {
+    private Workbook workbook;
 
-    static {
-        SimpleConfigurator.addConfigurator(new DbConfig("jdbc:mysql://localhost/digitalcampus?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf-8&autoReconnect=true", DbConfig.DEFAULT_CONFIG_NAME));
+    @BeforeClass
+    public static void setUpClass() {
     }
 
+    @Before
+    public void setUp() {
+        workbook = new HSSFWorkbook();
+
+    }
+    private static Map buildMap(String id,String kcmc,String kclx){
+        Map map=new HashMap();
+        map.put("id", id);
+        map.put("kcmc", kcmc);
+        map.put("kclx", kclx);
+        return map;
+    }
+    private static List<SchoolCourse> getList(){
+        List<SchoolCourse> list=new ArrayList<SchoolCourse>();
+        list.add(new SchoolCourse("1", "语文","1"));
+        list.add(new SchoolCourse("2", "数学","1"));
+        list.add(new SchoolCourse("3", "英语","1"));
+        list.add(new SchoolCourse("4", "政治","2"));
+        list.add(new SchoolCourse("5", "历史","2"));
+        list.add(new SchoolCourse("6", "地理","2"));
+        list.add(new SchoolCourse("7", "生物","2"));
+        list.add(new SchoolCourse("8", "物理","1"));
+        list.add(new SchoolCourse("9", "化学","1"));
+        list.add(new SchoolCourse("11", "体育","2"));
+        list.add(new SchoolCourse("12", "音乐","2"));
+        list.add(new SchoolCourse("13", "美术","2"));
+        list.add(new SchoolCourse("14", "写字","2"));
+        return list;
+    }
+
+    private static List<Map> getMapList(){
+        List<Map> list=new ArrayList<Map>();
+        list.add(buildMap("1", "语文","1"));
+        list.add(buildMap("2", "数学","1"));
+        list.add(buildMap("3", "英语","1"));
+        list.add(buildMap("4", "政治","2"));
+        list.add(buildMap("5", "历史","2"));
+        list.add(buildMap("6", "地理","2"));
+        list.add(buildMap("7", "生物","2"));
+        list.add(buildMap("8", "物理","1"));
+        list.add(buildMap("9", "化学","1"));
+        list.add(buildMap("11", "体育","2"));
+        list.add(buildMap("12", "音乐","2"));
+        list.add(buildMap("13", "美术","2"));
+        list.add(buildMap("14", "写字","2"));
+        return list;
+    }
     /**
      * 从List<Map>中导出
-     * @param workbook
      * @throws Exception
      */
-    public static void testSimpleMapExport(Workbook workbook) throws Exception {
-        Hyberbin hyberbin = new Hyberbin();
-        List<Map> list = hyberbin.getMapList("select * from dc_xxkc");
+    @Test
+    public void testSimpleMapExport() throws Exception {
         Sheet sheet = workbook.createSheet("testSimpleMapExport");
-        List<String> cols = new ArrayList<String>();
-        List<FieldColumn> fieldColumns = hyberbin.getFieldColumns();
-        for (FieldColumn column : fieldColumns) {
-            cols.add(column.getColumn());
-        }
-        SimpleExportService service = new SimpleExportService(sheet, list, (String[]) cols.toArray(new String[]{}), "学校课程");
+        SimpleExportService service = new SimpleExportService(sheet, getMapList(), new String[]{"id","KCMC","KCLX"}, "学校课程");
         service.setDic("KCLX", "KCLX").addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         service.doExport();
     }
 
     /**
      * 从List<Vo>中导出
-     * @param workbook
      * @throws Exception
      */
-    public static void testSimpleVoExport(Workbook workbook) throws Exception {
-        Hyberbin<SchoolCourse> hyberbin = new Hyberbin(new SchoolCourse());
-        List<SchoolCourse> list = hyberbin.showAll();
+    @Test
+    public void testSimpleVoExport() throws Exception {
         Sheet sheet = workbook.createSheet("testSimpleVoExport");
         //ExportExcelService service = new ExportExcelService(list, sheet, "学校课程");
-        ExportExcelService service = new ExportExcelService(list, sheet, new String[]{"id", "courseName", "type"}, "学校课程");
+        ExportExcelService service = new ExportExcelService(getList(), sheet, new String[]{"id", "courseName", "type"}, "学校课程");
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         service.doExport();
     }
 
     /**
      * 从List<Vo>，vo中还有简单循环节中导出
-     * @param workbook
      * @throws Exception
      */
-    public static void testVoHasListExport(Workbook workbook) throws Exception {
-        Hyberbin<SchoolCourse> hyberbin = new Hyberbin(new SchoolCourse());
-        List<SchoolCourse> list = hyberbin.showAll();
+    @Test
+    public void testVoHasListExport() throws Exception {
         List<String> strings = new ArrayList<String>();
+        List<SchoolCourse> list = getList();
         for (int i = 0; i < 10; i++) {
             strings.add("我是第" + i + "个循环字段");
         }
@@ -112,12 +145,11 @@ public class TestExcel {
 
     /**
      * 从List<Vo>，vo中还有复杂循环节中导出
-     * @param workbook
      * @throws Exception
      */
-    public static void testVoHasListVoExport(Workbook workbook) throws Exception {
-        Hyberbin<SchoolCourse> hyberbin = new Hyberbin(new SchoolCourse());
-        List<SchoolCourse> list = hyberbin.showAll();
+    @Test
+    public void testVoHasListVoExport() throws Exception {
+        List<SchoolCourse> list = getList();
         for (SchoolCourse course : list) {
             List<InnerVo> innerVos = new ArrayList<InnerVo>();
             for (int i = 0; i < 10; i++) {
@@ -142,10 +174,10 @@ public class TestExcel {
 
     /**
      * 导出一个纵表（课程表之类的）
-     * @param workbook
      * @throws Exception
      */
-    public static void testTableExport(Workbook workbook) throws Exception {
+    @Test
+    public void testTableExport() throws Exception {
         Sheet sheet = workbook.createSheet("testTableExport");
         TableBean tableBean = new TableBean(3, 3);
         Collection<CellBean> cellBeans = new HashSet<CellBean>();
@@ -162,10 +194,11 @@ public class TestExcel {
 
     /**
      * 从List<Vo>中入
-     * @param workbook
      * @throws Exception
      */
-    public static void testSimpleVoImport(Workbook workbook) throws Exception {
+    @Test
+    public void testSimpleVoImport() throws Exception {
+        testSimpleVoExport();
         Sheet sheet = workbook.getSheet("testSimpleVoExport");
         ImportExcelService service = new ImportExcelService(SchoolCourse.class, sheet);
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
@@ -175,10 +208,11 @@ public class TestExcel {
 
     /**
      * 从List<Vo>，vo中还有简单循环节中导入
-     * @param workbook
      * @throws Exception
      */
-    public static void testVoHasListImport(Workbook workbook) throws Exception {
+    @Test
+    public void testVoHasListImport() throws Exception {
+        testVoHasListExport();
         Sheet sheet = workbook.getSheet("testVoHasListExport");
         ImportExcelService service = new ImportExcelService(SchoolCourse.class, sheet);
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
@@ -188,27 +222,15 @@ public class TestExcel {
 
     /**
      * 从List<Vo>，vo中还有复杂循环节中导入
-     * @param workbook
      * @throws Exception
      */
-    public static void testVoHasListVoImport(Workbook workbook) throws Exception {
+    @Test
+    public void testVoHasListVoImport() throws Exception {
+        testVoHasListVoExport();
         Sheet sheet = workbook.getSheet("testVoHasListVoExport");
         ImportExcelService service = new ImportExcelService(SchoolCourse.class, sheet);
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         List list = service.doImport();
         System.out.println("成功导入：" + list.size() + "条数据");
-    }
-
-    public static void main(String[] args) throws Exception {
-        Workbook workbook = new HSSFWorkbook();
-        testSimpleMapExport(workbook);
-        testSimpleVoExport(workbook);
-        testVoHasListExport(workbook);
-        testVoHasListVoExport(workbook);
-        testTableExport(workbook);
-        testSimpleVoImport(workbook);
-        testVoHasListImport(workbook);
-        testVoHasListVoImport(workbook);
-        workbook.write(new FileOutputStream("D:\\excel.xls"));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Hyberbin.
+ * Copyright 2015 www.hyberbin.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -243,6 +243,15 @@ public class BaseExcelService {
     public static Sheet createSheet(Workbook workbook,String name){
         return workbook.createSheet(name);
     }
-
+    
+    /**
+     * 获取一个工作表
+     * @param workbook
+     * @param index
+     * @return
+     */
+    public static Sheet getSheet(Workbook workbook,int  index){
+        return workbook.getSheetAt(index);
+    }
     
 }

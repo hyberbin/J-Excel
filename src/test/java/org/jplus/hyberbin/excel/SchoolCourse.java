@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Hyberbin.
+ * Copyright 2015 www.hyberbin.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
  */
 package org.jplus.hyberbin.excel;
 
-import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import org.jplus.hyberbin.excel.annotation.ExcelColumnGroup;
 import org.jplus.hyberbin.excel.annotation.ExcelVoConfig;
 import org.jplus.hyberbin.excel.annotation.Lang;
@@ -27,31 +23,36 @@ import org.jplus.hyberbin.excel.annotation.output.OutputDicConfig;
 import org.jplus.hyberbin.excel.annotation.validate.DicValidateConfig;
 import org.jplus.hyberbin.excel.bean.BaseExcelVo;
 
+import java.util.List;
+
 /**
  *
  * @author Hyberbin
  */
-@Table(name = "dc_xxkc")
 @ExcelVoConfig//Excel导出的配置
 public class SchoolCourse extends BaseExcelVo {
 
-    @Column(name = "id")
     @Lang(value = "ID")//Excel导出的配置
     private String id;
-    @Column(name = "kcmc")
     @Lang(value = "课程名称")//Excel导出的配置
     private String courseName;
-    @Column(name = "kclx")
     @OutputDicConfig(dicCode = "KCLX")//Excel导出的配置
     @DicValidateConfig(dicCode = "KCLX")//如果要导出下拉框就加这个
     @Lang(value = "课程类型")//Excel导出的配置
     private String type;
-    @Transient
     @ExcelColumnGroup(type = String.class)
     private List<String> baseArray;
-    @Transient
     @ExcelColumnGroup(type = InnerVo.class)
     private List<InnerVo> innerVoArray;
+
+    public SchoolCourse() {
+    }
+
+    public SchoolCourse(String id, String courseName, String type) {
+        this.id = id;
+        this.courseName = courseName;
+        this.type = type;
+    }
 
     public String getId() {
         return id;
