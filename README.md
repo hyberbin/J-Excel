@@ -1,4 +1,4 @@
-J-Excel
+J-Excel 万能的Excel导入导出工具
 =======
 
 * Universal Excel import and export tools.
@@ -9,7 +9,7 @@ J-Excel
 * Support for Internationalization.
 * Don't write a configuration file.
 * Use the adapter pattern, data import and export support arbitrary types, users can also write your own adapter custom data types!
-Example please refer to: test package.
+
 <br/>
 <br/>
 * 万能的Excel导入导出工具.
