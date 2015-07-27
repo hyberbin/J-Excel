@@ -68,7 +68,14 @@ public class ExportTableService extends BaseExcelService {
                     sheet.addMergedRegion(range);
                 }
                 log.debug("set row:{},column:{},content:{}",cellBean.getRowIndex(),cellBean.getColumnIndex(),cellBean.getContent());
-                Cell cell = sheet.getRow(cellBean.getRowIndex()).getCell(cellBean.getColumnIndex());
+                Row row = sheet.getRow(cellBean.getRowIndex());
+                if(row==null){
+                    row=sheet.createRow(cellBean.getRowIndex());
+                }
+                Cell cell = row.getCell(cellBean.getColumnIndex());
+                if(cell==null){
+                    cell= row.createCell(cellBean.getColumnIndex());
+                }
                 cell.setCellValue(cellBean.getContent());
                 CellStyle cellStyle = cell.getCellStyle();
                 if(cellStyle==null){

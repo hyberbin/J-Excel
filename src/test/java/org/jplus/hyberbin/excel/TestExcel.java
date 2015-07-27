@@ -62,14 +62,6 @@ public class TestExcel {
         list.add(new SchoolCourse("3", "英语","1"));
         list.add(new SchoolCourse("4", "政治","2"));
         list.add(new SchoolCourse("5", "历史","2"));
-        list.add(new SchoolCourse("6", "地理","2"));
-        list.add(new SchoolCourse("7", "生物","2"));
-        list.add(new SchoolCourse("8", "物理","1"));
-        list.add(new SchoolCourse("9", "化学","1"));
-        list.add(new SchoolCourse("11", "体育","2"));
-        list.add(new SchoolCourse("12", "音乐","2"));
-        list.add(new SchoolCourse("13", "美术","2"));
-        list.add(new SchoolCourse("14", "写字","2"));
         return list;
     }
 
@@ -80,14 +72,6 @@ public class TestExcel {
         list.add(buildMap("3", "英语","1"));
         list.add(buildMap("4", "政治","2"));
         list.add(buildMap("5", "历史","2"));
-        list.add(buildMap("6", "地理","2"));
-        list.add(buildMap("7", "生物","2"));
-        list.add(buildMap("8", "物理","1"));
-        list.add(buildMap("9", "化学","1"));
-        list.add(buildMap("11", "体育","2"));
-        list.add(buildMap("12", "音乐","2"));
-        list.add(buildMap("13", "美术","2"));
-        list.add(buildMap("14", "写字","2"));
         return list;
     }
     /**
