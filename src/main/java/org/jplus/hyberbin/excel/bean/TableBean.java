@@ -28,7 +28,7 @@ public class TableBean {
     /**列数*/
     private int columnCount;
     /**行高*/
-    private float rowHeight=400f;
+    private Float rowHeight;
     /**单元格,可以不按顺序存放**/
     private Collection<CellBean> cellBeans;
 
@@ -53,11 +53,11 @@ public class TableBean {
         return columnCount;
     }
 
-    public float getRowHeight() {
+    public Float getRowHeight() {
         return rowHeight;
     }
 
-    public void setRowHeight(float rowHeight) {
+    public void setRowHeight(Float rowHeight) {
         this.rowHeight = rowHeight;
     }
     

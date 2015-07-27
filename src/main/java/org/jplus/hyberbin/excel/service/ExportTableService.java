@@ -49,8 +49,8 @@ public class ExportTableService extends BaseExcelService {
         log.debug("初始化单元格总共:{}行，{}列",tableBean.getRowCount(),tableBean.getColumnCount());
         for(int r=0;r<tableBean.getRowCount();r++){
             Row row = sheet.createRow(r);
-            if(tableBean.getRowHeight()>0){
-                row.setHeight((short) tableBean.getRowHeight());
+            if(tableBean.getRowHeight()!=null){
+                row.setHeight(tableBean.getRowHeight().shortValue());
             }
             for(int c=0;c<tableBean.getColumnCount();c++){
                 row.createCell(c);
