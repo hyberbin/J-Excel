@@ -16,11 +16,15 @@
  */
 package org.jplus.hyberbin.excel.bean;
 
+import org.apache.poi.ss.usermodel.Cell;
+
 /**
  * 单元格模型，可以是合并的情况
  * Created by Hyberbin on 2014/6/18.
  */
 public class CellBean {
+    /**单元格对象*/
+    private Cell cell;
     /**单元格内容*/
     private String content;
     /**开始行*/
@@ -133,5 +137,12 @@ public class CellBean {
     public void setWrapText(boolean wrapText) {
         this.wrapText = wrapText;
     }
-    
+
+    public Cell getCell() {
+        return cell;
+    }
+
+    public void setCell(Cell cell) {
+        this.cell = cell;
+    }
 }

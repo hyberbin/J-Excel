@@ -31,10 +31,13 @@ public class TableBean {
     private Float rowHeight;
     /**单元格,可以不按顺序存放**/
     private Collection<CellBean> cellBeans;
+    /**存放单元格矩阵*/
+    private CellBean[][] cellBeanArea;
 
     public TableBean(int rowCount, int columnCount) {
         this.rowCount = rowCount;
         this.columnCount = columnCount;
+        cellBeanArea=new CellBean[rowCount+1][columnCount+1];
     }
 
     public Collection<CellBean> getCellBeans() {
@@ -43,6 +46,9 @@ public class TableBean {
 
     public void setCellBeans(Collection<CellBean> cellBeans) {
         this.cellBeans = cellBeans;
+        for(CellBean cellBean:cellBeans){
+            cellBeanArea[cellBean.getRowIndex()][cellBean.getColumnIndex()]=cellBean;
+        }
     }
 
     public int getRowCount() {
@@ -59,6 +65,10 @@ public class TableBean {
 
     public void setRowHeight(Float rowHeight) {
         this.rowHeight = rowHeight;
+    }
+
+    public CellBean getCellBean(int row,int column){
+        return cellBeanArea[row][column];
     }
     
 }

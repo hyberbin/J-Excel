@@ -22,10 +22,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.jplus.hyberbin.excel.bean.CellBean;
 import org.jplus.hyberbin.excel.bean.GroupConfig;
 import org.jplus.hyberbin.excel.bean.TableBean;
-import org.jplus.hyberbin.excel.service.ExportExcelService;
-import org.jplus.hyberbin.excel.service.ExportTableService;
-import org.jplus.hyberbin.excel.service.ImportExcelService;
-import org.jplus.hyberbin.excel.service.SimpleExportService;
+import org.jplus.hyberbin.excel.service.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -59,9 +56,9 @@ public class TestExcel {
         List<SchoolCourse> list=new ArrayList<SchoolCourse>();
         list.add(new SchoolCourse("1", "语文","1"));
         list.add(new SchoolCourse("2", "数学","1"));
-        list.add(new SchoolCourse("3", "英语","1"));
-        list.add(new SchoolCourse("4", "政治","2"));
-        list.add(new SchoolCourse("5", "历史","2"));
+        list.add(new SchoolCourse("3", "英语", "1"));
+        list.add(new SchoolCourse("4", "政治", "2"));
+        list.add(new SchoolCourse("5", "历史", "2"));
         return list;
     }
 
@@ -174,6 +171,15 @@ public class TestExcel {
         tableBean.setCellBeans(cellBeans);
         ExportTableService tableService = new ExportTableService(sheet, tableBean);
         tableService.doExport();
+    }
+    @Test
+    public void testTableImport()throws Exception {
+       testTableExport();
+        Sheet sheet = workbook.getSheet("testTableExport");
+        ImportTableService tableService=new ImportTableService(sheet);
+        tableService.doImport();
+        TableBean tableBean = tableService.getTableBean();
+        System.out.println(tableBean.getCellBeans().size());
     }
 
     /**
