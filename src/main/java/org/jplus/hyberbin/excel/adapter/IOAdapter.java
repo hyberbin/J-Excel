@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory;
  * Time: 下午2:04
  */
 public abstract class IOAdapter {
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected final transient Logger log = LoggerFactory.getLogger(getClass());
+//    protected Logger log = LoggerFactory.getLogger(getClass());
     protected DicCodePool dicCodePool;
 
     public IOAdapter(DicCodePool dicCodePool) {

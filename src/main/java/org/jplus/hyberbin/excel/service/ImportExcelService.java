@@ -112,6 +112,11 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
         dicCodePool.addMap(name, maps);
         return this;
     }
+
+    public ImportExcelService addDic(String name, Map<String, String> map) {
+        dicCodePool.addMap(name, map);
+        return this;
+    }
     
     public ImportExcelService addDic(String name, String key,String value) {
         dicCodePool.addMap(name, key, value);

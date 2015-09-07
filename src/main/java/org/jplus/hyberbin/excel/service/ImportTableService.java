@@ -24,7 +24,6 @@ import org.jplus.hyberbin.excel.bean.CellBean;
 import org.jplus.hyberbin.excel.bean.TableBean;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -37,9 +36,15 @@ public class ImportTableService {
     private Sheet sheet;
     private TableBean tableBean;
     private ICellReaderAdapter[][] iCellReaderAdapters;
+    private ICellReaderAdapter defaultCellReaderAdapter;
 
     public ImportTableService(Sheet sheet) {
         this.sheet = sheet;
+    }
+
+    public ImportTableService(Sheet sheet, ICellReaderAdapter defaultCellReaderAdapter) {
+        this.sheet = sheet;
+        this.defaultCellReaderAdapter=defaultCellReaderAdapter;
     }
 
     /**
@@ -86,13 +91,37 @@ public class ImportTableService {
     /**
      * 执行数据读取.
      */
-    public void doRead(){
+    public void doReadCells(){
         if(tableBean==null){
             doImport();
         }
         for(CellBean cellBean:tableBean.getCellBeans()){
-            iCellReaderAdapters[cellBean.getRowIndex()][cellBean.getColumnIndex()].read(cellBean);
+            ICellReaderAdapter adapter = iCellReaderAdapters[cellBean.getRowIndex()][cellBean.getColumnIndex()];
+            if(adapter==null){
+                adapter=defaultCellReaderAdapter;
+            }
+            if(adapter!=null){
+                adapter.read(cellBean, tableBean);
+            }
         }
+    }
+    /**
+     * 整个读取
+     *
+     * @return
+     */
+    public Object read() {
+      return   defaultCellReaderAdapter.read(tableBean);
+    }
+
+    /**
+     * 预读取,用于数据校验
+     *
+     * @param tableBean
+     * @return
+     */
+    public void preRead(TableBean tableBean) {
+        defaultCellReaderAdapter.preRead(tableBean);
     }
 
     /**
@@ -100,7 +129,7 @@ public class ImportTableService {
      * @param cellReaderAdapter
      */
     public void setDefaultReader(ICellReaderAdapter cellReaderAdapter){
-        Arrays.fill(iCellReaderAdapters, cellReaderAdapter);
+        this.defaultCellReaderAdapter=defaultCellReaderAdapter;
     }
 
     /**
@@ -114,6 +143,9 @@ public class ImportTableService {
     }
 
     public TableBean getTableBean() {
+        if(tableBean==null){
+            doImport();
+        }
         return tableBean;
     }
 }

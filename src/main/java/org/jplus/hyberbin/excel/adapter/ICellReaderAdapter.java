@@ -17,6 +17,7 @@
 package org.jplus.hyberbin.excel.adapter;
 
 import org.jplus.hyberbin.excel.bean.CellBean;
+import org.jplus.hyberbin.excel.bean.TableBean;
 
 /**
  * 单元格读取适配器接口.
@@ -24,5 +25,25 @@ import org.jplus.hyberbin.excel.bean.CellBean;
  * Created by hyberbin on 15/7/31.
  */
 public interface ICellReaderAdapter {
-    Object read(CellBean cellBean);
+    /**
+     * 根据单元格读取
+     * @param cellBean
+     * @param tableBean
+     * @return
+     */
+    Object read(CellBean cellBean, TableBean tableBean);
+
+    /**
+     * 整个读取
+     * @param tableBean
+     * @return
+     */
+    Object read(TableBean tableBean);
+
+    /**
+     * 预读取,用于数据校验
+     * @param tableBean
+     * @return
+     */
+    void preRead(TableBean tableBean);
 }

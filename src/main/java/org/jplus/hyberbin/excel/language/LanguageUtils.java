@@ -16,6 +16,7 @@
  */
 package org.jplus.hyberbin.excel.language;
 
+
 /**
  * 语言国际化工具.
  * 用户可以自己实现国际化接口

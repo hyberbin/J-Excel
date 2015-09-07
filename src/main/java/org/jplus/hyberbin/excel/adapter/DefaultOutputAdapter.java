@@ -37,8 +37,6 @@ import org.jplus.hyberbin.excel.utils.NumberUtils;
 import org.jplus.hyberbin.excel.utils.ObjectHelper;
 
 /**
- * 默认的输出适配器.
- * 适用于一行是一个java对象的写入方式.
  * User: Hyberbin
  * Date: 13-12-3
  * Time: 上午10:27

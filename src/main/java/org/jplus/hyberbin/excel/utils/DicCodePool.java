@@ -16,12 +16,7 @@
  */
 package org.jplus.hyberbin.excel.utils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA. User: Hyberbin Date: 13-12-3 Time: 下午1:37
@@ -52,6 +47,37 @@ public class DicCodePool {
                 valueSet.add(value);
                 valueDicBeanMap.put(value, key);
             }
+            dicKeySet.put(mapName, keySet);
+            dicValueSet.put(mapName, valueSet);
+            dicKeyPool.put(mapName, keyDicBeanMap);
+            dicValuePool.put(mapName, valueDicBeanMap);
+        }
+    }
+
+    public void addMap(String mapName, Map<String, String> map) {
+        if (ObjectHelper.isNotEmpty(map)) {
+            Map<String, String> keyDicBeanMap = new HashMap<String, String>();
+            Map<String, String> valueDicBeanMap = new HashMap<String, String>();
+            Set keySet = new LinkedHashSet();
+            Set valueSet = new LinkedHashSet();
+            Iterator<String> it = map.keySet().iterator();
+            while (it.hasNext()){
+                String key = it.next();
+                String value = map.get(key);
+                keyDicBeanMap.put(key, value);
+                keySet.add(key);
+                valueSet.add(value);
+                valueDicBeanMap.put(value, key);
+            }
+//
+//            for (Map<String, String> map : mapList) {
+//                String key = map.get("key");
+//                String value = map.get("value");
+//                keyDicBeanMap.put(key, value);
+//                keySet.add(key);
+//                valueSet.add(value);
+//                valueDicBeanMap.put(value, key);
+//            }
             dicKeySet.put(mapName, keySet);
             dicValueSet.put(mapName, valueSet);
             dicKeyPool.put(mapName, keyDicBeanMap);

@@ -164,6 +164,11 @@ public class ExportExcelService<T extends BaseExcelVo> extends BaseExcelService 
         return this;
     }
 
+    public ExportExcelService addDic(String name, Map<String, String> map) {
+        dicCodePool.addMap(name, map);
+        return this;
+    }
+
     public ExportExcelService addDic(String name, String key, String value) {
         dicCodePool.addMap(name, key, value);
         return this;

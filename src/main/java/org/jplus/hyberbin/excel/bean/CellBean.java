@@ -145,4 +145,5 @@ public class CellBean {
     public void setCell(Cell cell) {
         this.cell = cell;
     }
+    
 }

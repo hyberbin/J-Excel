@@ -16,6 +16,7 @@
  */
 package org.jplus.hyberbin.excel.service;
 
+import java.util.Collection;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,8 +26,6 @@ import org.jplus.hyberbin.excel.bean.CellBean;
 import org.jplus.hyberbin.excel.bean.TableBean;
 import org.jplus.hyberbin.excel.json.JsonUtil;
 import org.jplus.hyberbin.excel.utils.ObjectHelper;
-
-import java.util.Collection;
 
 /**
  * 导出一个表格
@@ -50,7 +49,7 @@ public class ExportTableService extends BaseExcelService {
         for(int r=0;r<tableBean.getRowCount();r++){
             Row row = sheet.createRow(r);
             if(tableBean.getRowHeight()!=null){
-                row.setHeight(tableBean.getRowHeight().shortValue());
+                row.setHeightInPoints(tableBean.getRowHeight());
             }
             for(int c=0;c<tableBean.getColumnCount();c++){
                 row.createCell(c);
@@ -68,14 +67,7 @@ public class ExportTableService extends BaseExcelService {
                     sheet.addMergedRegion(range);
                 }
                 log.debug("set row:{},column:{},content:{}",cellBean.getRowIndex(),cellBean.getColumnIndex(),cellBean.getContent());
-                Row row = sheet.getRow(cellBean.getRowIndex());
-                if(row==null){
-                    row=sheet.createRow(cellBean.getRowIndex());
-                }
-                Cell cell = row.getCell(cellBean.getColumnIndex());
-                if(cell==null){
-                    cell= row.createCell(cellBean.getColumnIndex());
-                }
+                Cell cell = sheet.getRow(cellBean.getRowIndex()).getCell(cellBean.getColumnIndex());
                 cell.setCellValue(cellBean.getContent());
                 CellStyle cellStyle = cell.getCellStyle();
                 if(cellStyle==null){

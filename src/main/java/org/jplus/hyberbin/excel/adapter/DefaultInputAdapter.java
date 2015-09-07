@@ -15,7 +15,7 @@
  * Email:hyberbin@qq.com
  */
 package org.jplus.hyberbin.excel.adapter;
-
+package org.jplus.hyberbin.excel.adapter;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,8 +38,6 @@ import org.jplus.hyberbin.excel.utils.NumberUtils;
 import org.jplus.hyberbin.excel.utils.ObjectHelper;
 
 /**
- * 默认的输入适配器.
- * 适用于一行是一个java对象的读取方式.
  * User: Hyberbin
  * Date: 13-12-3
  * Time: 上午11:02

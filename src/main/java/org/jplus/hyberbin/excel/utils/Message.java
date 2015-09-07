@@ -21,10 +21,13 @@ package org.jplus.hyberbin.excel.utils;
  * @author Hyberbin
  */
 public class Message {
+    public static final String RESOURCE_NAME = Message.class.getPackage().getName() + ".message";
+
+    public static final String ERROR_TEST = "error.test";
     /**
      * 模块名
      */
-    private static final String MODULE_NAME = "commons.excel";
+    private static final String MODULE_NAME = "tools.excel";
     private static final String DOT = ".";
     private static final String ERROR = "error";
     private static final String WARN = "warn";
@@ -33,15 +36,15 @@ public class Message {
     /**
      * 错误信息前缀
      */
-    private static final String MSG_ERROR = MODULE_NAME + DOT + ERROR;
+    private static final String MSG_ERROR = MODULE_NAME + DOT + ERROR + DOT;
     /**
      * 警告信息前缀
      */
-    private static final String MSG_WARN = MODULE_NAME + DOT + WARN;
+    private static final String MSG_WARN = MODULE_NAME + DOT + WARN + DOT;
     /**
      * 一般信息前缀
      */
-    private static final String MSG_INFO = MODULE_NAME + DOT + INFO;
+    private static final String MSG_INFO = MODULE_NAME + DOT + INFO + DOT;
     /**
      * 成功信息前缀
      */

@@ -68,7 +68,11 @@ public class TableBean {
     }
 
     public CellBean getCellBean(int row,int column){
-        return cellBeanArea[row][column];
+        if(cellBeanArea.length<=row||cellBeanArea[0].length<=column){
+            return null;
+        }else {
+            return cellBeanArea[row][column];
+        }
     }
-    
+
 }
