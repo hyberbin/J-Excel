@@ -113,6 +113,22 @@ public class TestExcel {
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         service.doExport();
     }
+    
+    
+    /**
+     * 从Excel中直接导入
+     */
+    @Test
+    public void testSimpleImport()throws Exception {
+        testTableExport();
+        Sheet sheet = workbook.getSheet("testTableExport");
+        ImportTableService tableService=new ImportTableService(sheet);
+        tableService.doImport();
+        //直接读取到List中,泛型可以是Map也可以是PO
+        //第一个参数是从表格第0列开始依次读取内容放到哪些字段中
+        List<Map> read = tableService.read(new String[]{"a","b","c"}, Map.class);
+        System.out.print(read);
+    }
 
     /**
      * 从List<Vo>，vo中还有简单循环节中导出

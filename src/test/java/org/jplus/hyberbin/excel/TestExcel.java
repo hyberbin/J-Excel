@@ -72,7 +72,7 @@ public class TestExcel {
         return list;
     }
     /**
-     * 从List<Map>中导出
+     * 从List中导出
      * @throws Exception
      */
     @Test
@@ -81,6 +81,21 @@ public class TestExcel {
         SimpleExportService service = new SimpleExportService(sheet, getMapList(), new String[]{"id","KCMC","KCLX"}, "学校课程");
         service.setDic("KCLX", "KCLX").addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         service.doExport();
+    }
+
+    /**
+     * 从Excel中直接导入
+     */
+    @Test
+    public void testSimpleImport()throws Exception {
+        testTableExport();
+        Sheet sheet = workbook.getSheet("testTableExport");
+        ImportTableService tableService=new ImportTableService(sheet);
+        tableService.doImport();
+        //直接读取到List中,泛型可以是Map也可以是PO
+        //第一个参数是从表格第0列开始依次读取内容放到哪些字段中
+        List<Map> read = tableService.read(new String[]{"a","b","c"}, Map.class);
+        System.out.print(read);
     }
 
     /**
@@ -174,7 +189,7 @@ public class TestExcel {
     }
     @Test
     public void testTableImport()throws Exception {
-       testTableExport();
+        testTableExport();
         Sheet sheet = workbook.getSheet("testTableExport");
         ImportTableService tableService=new ImportTableService(sheet);
         tableService.doImport();

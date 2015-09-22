@@ -124,9 +124,13 @@ public class FieldUtils {
             return tablebean;
         }
         try {
-            log.debug("准备为对象进行setter方法注入");
-            Method method = tablebean.getClass().getMethod(set(fieldName), value.getClass());//取得set方法
-            method.invoke(tablebean, value);//调用实体类的setXXX方法
+            if(tablebean instanceof Map){
+                ((Map)tablebean).put(fieldName,value);
+            }else {
+                log.debug("准备为对象进行setter方法注入");
+                Method method = tablebean.getClass().getMethod(set(fieldName), value.getClass());//取得set方法
+                method.invoke(tablebean, value);//调用实体类的setXXX方法
+            }
         } catch (IllegalAccessException ex) {
             log.error("FieldUtil错误：参数不正确", ex);
         } catch (NoSuchMethodException ex) {

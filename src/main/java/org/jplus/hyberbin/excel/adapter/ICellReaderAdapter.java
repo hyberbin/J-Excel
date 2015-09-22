@@ -26,14 +26,6 @@ import org.jplus.hyberbin.excel.bean.TableBean;
  */
 public interface ICellReaderAdapter {
     /**
-     * 根据单元格读取
-     * @param cellBean
-     * @param tableBean
-     * @return
-     */
-    Object read(CellBean cellBean, TableBean tableBean);
-
-    /**
      * 整个读取
      * @param tableBean
      * @return
