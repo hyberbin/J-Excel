@@ -120,7 +120,7 @@ public class TestExcel {
      */
     @Test
     public void testSimpleImport()throws Exception {
-        testTableExport();
+        testTableExport();//这一步仅仅是想得到一个已有的Excel,用户可以通过其他形式生成一个已有数据的workbook
         Sheet sheet = workbook.getSheet("testTableExport");
         ImportTableService tableService=new ImportTableService(sheet);
         tableService.doImport();
@@ -213,7 +213,7 @@ public class TestExcel {
      */
     @Test
     public void testSimpleVoImport() throws Exception {
-        testSimpleVoExport();
+        testSimpleVoExport();//这一步仅仅是想得到一个已有的Excel,用户可以通过其他形式生成一个已有数据的workbook
         Sheet sheet = workbook.getSheet("testSimpleVoExport");
         ImportExcelService service = new ImportExcelService(SchoolCourse.class, sheet);
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
@@ -227,7 +227,7 @@ public class TestExcel {
      */
     @Test
     public void testVoHasListImport() throws Exception {
-        testVoHasListExport();
+        testVoHasListExport();//这一步仅仅是想得到一个已有的Excel,用户可以通过其他形式生成一个已有数据的workbook
         Sheet sheet = workbook.getSheet("testVoHasListExport");
         ImportExcelService service = new ImportExcelService(SchoolCourse.class, sheet);
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
@@ -241,7 +241,7 @@ public class TestExcel {
      */
     @Test
     public void testVoHasListVoImport() throws Exception {
-        testVoHasListVoExport();
+        testVoHasListVoExport();//这一步仅仅是想得到一个已有的Excel,用户可以通过其他形式生成一个已有数据的workbook
         Sheet sheet = workbook.getSheet("testVoHasListVoExport");
         ImportExcelService service = new ImportExcelService(SchoolCourse.class, sheet);
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
