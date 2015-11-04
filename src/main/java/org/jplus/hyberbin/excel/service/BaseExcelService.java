@@ -71,7 +71,7 @@ public class BaseExcelService {
      * @param sheet
      * @param hashCode
      */
-    protected  static void setHashVal(Sheet sheet,long hashCode){
+    public  static void setHashVal(Sheet sheet,long hashCode){
         Row sheetRow = sheet.getRow(HASH_ROW);
         Cell cell = sheetRow.createCell(0);
         cell.setCellValue(hashCode);
@@ -83,7 +83,7 @@ public class BaseExcelService {
      * @param sheet
      * @return
      */
-    protected  static long getHashVal(Sheet sheet){
+    public  static long getHashVal(Sheet sheet){
         Row sheetRow = sheet.getRow(HASH_ROW);
         Cell cell = sheetRow.getCell(0);
         return ((Double)cell.getNumericCellValue()).longValue();
@@ -93,7 +93,7 @@ public class BaseExcelService {
      * 给单元格设置红色错误背景
      * @param cell
      */
-    protected static void setErrorStyle(Cell cell){
+    public static void setErrorStyle(Cell cell){
         if(cell!=null){
             CellStyle newstyle = cell.getSheet().getWorkbook().createCellStyle();
             CellStyle style = cell.getCellStyle();
@@ -106,7 +106,7 @@ public class BaseExcelService {
         }
     }
 
-   
+
 
     /**
      * 判断一个单元格是否为空

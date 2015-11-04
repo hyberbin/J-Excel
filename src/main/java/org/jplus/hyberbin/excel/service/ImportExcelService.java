@@ -308,6 +308,7 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
             inputMethod = inputMethod == null ? defaultAdapterMethod : inputMethod;
             excelVo.setCol(index);
             String name = fieldBean.getField().getName();
+            excelVo.setCell(name,cell);
             Object o = AdapterUtil.invokeInputAdapterMethod(inputFactory, inputMethod,dataBean, fieldBean.getField().getType(), name, cell);
             dataBean.setFieldValue(name, excelVo, o);
             log.debug("geted field value:row:{},index:{},name:{},value:{}",row,index,name,o);

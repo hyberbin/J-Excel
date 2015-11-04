@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.jplus.hyberbin.excel.adapter.ICellReaderAdapter;
+import org.jplus.hyberbin.excel.bean.BaseExcelVo;
 import org.jplus.hyberbin.excel.bean.CellBean;
 import org.jplus.hyberbin.excel.bean.TableBean;
 import org.jplus.hyberbin.excel.utils.ConverString;
@@ -41,6 +42,7 @@ public class ImportTableService {
     private Sheet sheet;
     private TableBean tableBean;
     private ICellReaderAdapter defaultCellReaderAdapter;
+    private Integer startRow=0;
     private Map<Integer,Integer> forceCellType=new HashMap();
     private String dateFormat="yyyy/MM/dd";
 
@@ -71,7 +73,7 @@ public class ImportTableService {
         }
         tableBean=new TableBean(rowNum,columnNum);
         Collection<CellBean> cellBeans=new ArrayList<CellBean>();
-        for(int r=0;r<rowNum;r++){
+        for(int r=startRow;r<rowNum;r++){
             Row row = sheet.getRow(r);
             if (row!=null){
                 for(int c=0;c<row.getLastCellNum();c++){
@@ -100,6 +102,9 @@ public class ImportTableService {
                                 cellValue= String.valueOf(cell.getNumericCellValue());
                         }else if(Cell.CELL_TYPE_STRING==cell.getCellType()){
                             cellValue=cell.getStringCellValue();
+                        }
+                        if(cellValue!=null&&cellValue instanceof String){
+                            cellValue=cellValue.toString().trim();
                         }
                         CellBean cellBean=new CellBean(cellValue,r,c);
                         cellBean.setCell(cell);
@@ -133,23 +138,38 @@ public class ImportTableService {
      */
     public <T>List<T> read(String[] sortedColumns,Class<? extends T> type){
         List<T> list=new ArrayList();
-        for(int i=0;i<tableBean.getRowCount();i++){
+        for(int i=startRow;i<tableBean.getRowCount();i++){
             Object bean=Map.class.isAssignableFrom(type) ? new HashMap(): Reflections.instance(type.getName());
             for (int j = 0; j < sortedColumns.length; j++) {
                 String column = sortedColumns[j];
                 if(ObjectHelper.isNotEmpty(column)){
                     CellBean cellBean = tableBean.getCellBean(i, j);
-                    if(cellBean!=null&& ObjectHelper.isNotEmpty(cellBean.getContent())){
+                    if(cellBean!=null){
+                        Cell cell = cellBean.getCell();
+                        if(cell==null){
+                            cell=sheet.getRow(i).createCell(j);
+                        }
                         if(bean instanceof Map){
-                            FieldUtils.setFieldValue(bean, column, cellBean.getContent());
+                            FieldUtils.setFieldValue(bean, "cell"+column, cell);
+                            if(ObjectHelper.isNotEmpty(cellBean.getContent())){
+                                FieldUtils.setFieldValue(bean, column, cellBean.getContent());
+                            }
                         }else{
+                            if(bean instanceof BaseExcelVo){
+                                BaseExcelVo baseExcelVo=((BaseExcelVo)bean);
+                                baseExcelVo.setCell(column,cell);
+                                baseExcelVo.setRow(i);
+                                baseExcelVo.setCol(j);
+                            }
                             Field accessibleField = Reflections.getAccessibleField(bean, column);
                             Class<?> fieldType = accessibleField.getType();
                             Object value=cellBean.getContent();
                             if(!fieldType.equals(String.class)){
                                 value= ConverString.asType(fieldType, cellBean.getContent());
                             }
-                            FieldUtils.setFieldValue(bean,column,value);
+                            if(ObjectHelper.isNotEmpty(cellBean.getContent())){
+                                FieldUtils.setFieldValue(bean,column,value);
+                            }
                         }
                     }
                 }
@@ -175,6 +195,14 @@ public class ImportTableService {
             doImport();
         }
         return tableBean;
+    }
+
+    public Integer getStartRow() {
+        return startRow;
+    }
+
+    public void setStartRow(Integer startRow) {
+        this.startRow = startRow;
     }
 
     public String getDateFormat() {

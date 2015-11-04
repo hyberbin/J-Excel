@@ -16,6 +16,11 @@
  */
 package org.jplus.hyberbin.excel.bean;
 
+import org.apache.poi.ss.usermodel.Cell;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Hyberbin
@@ -25,6 +30,7 @@ package org.jplus.hyberbin.excel.bean;
 public abstract class BaseExcelVo {
     private int row;
     private int col;
+    private Map<String,Cell> cellMap=new HashMap<String, Cell>();
     private String message;
 
     public int getCol() {
@@ -52,6 +58,14 @@ public abstract class BaseExcelVo {
     }
 
     public abstract int getHashVal();
+
+    public Cell getCell(String item) {
+        return cellMap.get(item);
+    }
+
+    public void setCell(String item,Cell cell) {
+        cellMap.put(item,cell);
+    }
 
     /**
      * 如果返回false将会加入到错误信息列表.
