@@ -27,6 +27,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.*;
 
 /**
@@ -88,14 +91,17 @@ public class TestExcel {
      */
     @Test
     public void testSimpleImport()throws Exception {
-        testTableExport();
-        Sheet sheet = workbook.getSheet("testTableExport");
+//        testTableExport();
+        workbook = new HSSFWorkbook(new FileInputStream("D:/test0.xls"));
+        Sheet sheet = workbook.getSheet("testSimpleVoExport");
         ImportTableService tableService=new ImportTableService(sheet);
+        tableService.setStartRow(1);
         tableService.doImport();
         //直接读取到List中,泛型可以是Map也可以是PO
         //第一个参数是从表格第0列开始依次读取内容放到哪些字段中
-        List<Map> read = tableService.read(new String[]{"a","b","c"}, Map.class);
-        System.out.print(read);
+//        List<Map> read = tableService.read(new String[]{"a","b","c"}, Map.class);
+        List<SchoolCourse> read2 = tableService.read(new String[]{"id","courseName","type"}, SchoolCourse.class);
+        System.out.print(read2);
     }
 
     /**
@@ -109,6 +115,12 @@ public class TestExcel {
         ExportExcelService service = new ExportExcelService(getList(), sheet, new String[]{"id", "courseName", "type"}, "学校课程");
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         service.doExport();
+        FileOutputStream fos = new FileOutputStream("D:/test.xls");
+        workbook.write(fos);
+        if(null != fos){
+            fos.close();
+        }
+
     }
 
     /**
@@ -203,11 +215,20 @@ public class TestExcel {
      */
     @Test
     public void testSimpleVoImport() throws Exception {
-        testSimpleVoExport();
+//        testSimpleVoExport();
+//        Sheet sheet = workbook.getSheet("testSimpleVoExport");
+        workbook = new HSSFWorkbook(new FileInputStream("D:/test0.xls"));
         Sheet sheet = workbook.getSheet("testSimpleVoExport");
         ImportExcelService service = new ImportExcelService(SchoolCourse.class, sheet);
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         List list = service.doImport();
+        List list2 = service.getErrorList();
+
+        FileOutputStream fos = new FileOutputStream("D:/test00.xls");
+        workbook.write(fos);
+        if(null != fos){
+            fos.close();
+        }
         System.out.println("成功导入：" + list.size() + "条数据");
     }
 
