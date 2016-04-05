@@ -19,6 +19,7 @@ package org.jplus.hyberbin.excel;
 import org.jplus.hyberbin.excel.annotation.ExcelColumnGroup;
 import org.jplus.hyberbin.excel.annotation.ExcelVoConfig;
 import org.jplus.hyberbin.excel.annotation.Lang;
+import org.jplus.hyberbin.excel.annotation.input.InputDicConfig;
 import org.jplus.hyberbin.excel.annotation.output.OutputDicConfig;
 import org.jplus.hyberbin.excel.annotation.validate.DicValidateConfig;
 import org.jplus.hyberbin.excel.bean.BaseExcelVo;
@@ -36,6 +37,8 @@ public class SchoolCourse extends BaseExcelVo {
     private String id;
     @Lang(value = "课程名称")//Excel导出的配置
     private String courseName;
+
+    @InputDicConfig(dicCode = "KCLX")//Excel导入的配置
     @OutputDicConfig(dicCode = "KCLX")//Excel导出的配置
     @DicValidateConfig(dicCode = "KCLX")//如果要导出下拉框就加这个
     @Lang(value = "课程类型")//Excel导出的配置
