@@ -96,7 +96,21 @@ public class TestExcel {
     @Test
     public void testSimpleMapExport() throws Exception {
         Sheet sheet = workbook.createSheet("testSimpleMapExport");
-        SimpleExportService service = new SimpleExportService(sheet, getMapList(), new String[]{"id","KCMC","KCLX"}, "学校课程");
+        SimpleExportService service = new SimpleExportService(sheet, getMapList(), new String[]{"id","kcmc","kclx"}, "学校课程");
+        //如果要表头可以像下面这样设置,不要表头可以不写
+        service.setLanguage(new ILanguage() {
+            @Override
+            public String translate(Object key, Object... args) {
+                if("id".equals(key)){
+                    return "序号";
+                }else if("kcmc".equals(key)){
+                    return "课程名称";
+                }else if("kclx".equals(key)){
+                    return "课程类型";
+                }
+                return key+"";
+            }
+        });
         service.setDic("KCLX", "KCLX").addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         service.doExport();
     }
