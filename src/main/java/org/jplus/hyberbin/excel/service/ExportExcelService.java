@@ -309,13 +309,13 @@ public class ExportExcelService<T extends BaseExcelVo> extends BaseExcelService 
                     for (int i = 0; i < size; i++) {
                         FieldBean childFieldBean = childDataBean.getFiledBeanList().get(i);
                         if (childFieldBean.getFieldType() == FieldType.BASIC) {
-                            getSimpleField(childFieldBean, baseExcelVo, rowData, row, index + r * size, childDataBean);
+                            getSimpleField(childFieldBean, baseExcelVo, rowData, row, index + r * size+i, childDataBean);
                         } else if (childFieldBean.getFieldType() == FieldType.BAS_ARRAY) {
                             GroupConfig childGroup = groupConfig.get(childFieldBean.getField().getName());
-                            getBasArrayField(childFieldBean, baseExcelVo, rowData, row, index + r * size, childDataBean, childGroup);
+                            getBasArrayField(childFieldBean, baseExcelVo, rowData, row, index + r * size+i, childDataBean, childGroup);
                         } else if (childFieldBean.getFieldType() == FieldType.ColumnGroup_ARRAY) {
                             GroupConfig childGroup = groupConfig.get(childFieldBean.getField().getName());
-                            getColumnGroupField(childFieldBean, baseExcelVo, rowData, row, index + r * size, childDataBean, childGroup);
+                            getColumnGroupField(childFieldBean, baseExcelVo, rowData, row, index + r * size+i, childDataBean, childGroup);
                         }
                     }
                 }
