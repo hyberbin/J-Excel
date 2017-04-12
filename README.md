@@ -10,8 +10,7 @@ J-Excel 万能的Excel导入导出工具
 * Don't write a configuration file.
 * Use the adapter pattern, data import and export support arbitrary types, users can also write your own adapter custom data types!
 
-<br/>
-<br/>
+
 * 万能的Excel导入导出工具.
 * 支持从List&lt;Map&gt;中导出.
 * 支持从List&lt;POJO&gt;中导入导出.
@@ -25,8 +24,8 @@ J-Excel 万能的Excel导入导出工具
 * 支持自由交换表格中的行或者列.
 * 不写一个配置文件.
 * 用到了适配器模式，支持任意类型的数据导入导出，用户还可以自己编写适配器操作自定义的数据类型！
-<br/>
-示例请参照：<br/>
+
+示例请参照：
 
 ```java
 
