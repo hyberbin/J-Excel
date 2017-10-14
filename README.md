@@ -1,4 +1,16 @@
-J-Excel 万能的Excel导入导出工具
+## 引入方式
+
+```xml
+<repositories>
+        <repository>
+            <id>hengyunabc-maven-repo</id>
+            <url>https://raw.githubusercontent.com/hyberbin/maven-repo/master/repository</url>
+        </repository>
+    </repositories>
+```
+
+
+## J-Excel 万能的Excel导入导出工具
 =======
 
 * Universal Excel import and export tools.
