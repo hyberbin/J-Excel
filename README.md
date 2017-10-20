@@ -3,7 +3,7 @@
 ```xml
 <repositories>
         <repository>
-            <id>hengyunabc-maven-repo</id>
+            <id>hyberbin-maven-repo</id>
             <url>https://raw.githubusercontent.com/hyberbin/maven-repo/master/repository</url>
         </repository>
     </repositories>
