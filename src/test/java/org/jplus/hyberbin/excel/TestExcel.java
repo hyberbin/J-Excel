@@ -106,9 +106,8 @@ public class TestExcel {
      */
     @Test
     public void testSimpleImport()throws Exception {
-//        testTableExport();
-        workbook = new HSSFWorkbook(new FileInputStream("D:/test0.xls"));
-        Sheet sheet = workbook.getSheet("testSimpleVoExport");
+        testTableExport();
+        Sheet sheet = workbook.getSheetAt(0);
         ImportTableService tableService=new ImportTableService(sheet);
         tableService.setStartRow(1);
         tableService.doImport();
@@ -126,11 +125,10 @@ public class TestExcel {
     @Test
     public void testSimpleVoExport() throws Exception {
         Sheet sheet = workbook.createSheet("testSimpleVoExport");
-        //ExportExcelService service = new ExportExcelService(list, sheet, "学校课程");
         ExportExcelService service = new ExportExcelService(getList(), sheet, new String[]{"id", "courseName", "type"}, "学校课程");
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         service.doExport();
-        FileOutputStream fos = new FileOutputStream("D:/test.xls");
+        FileOutputStream fos = new FileOutputStream("test.xls");
         workbook.write(fos);
         if(null != fos){
             fos.close();
@@ -225,21 +223,57 @@ public class TestExcel {
     }
 
     /**
-     * 从List<Vo>中入
+     * 从Excel文件导入到List<? extends BaseExcelVo>
      * @throws Exception
      */
     @Test
     public void testSimpleVoImport() throws Exception {
-//        testSimpleVoExport();
-//        Sheet sheet = workbook.getSheet("testSimpleVoExport");
-        workbook = new HSSFWorkbook(new FileInputStream("D:/test0.xls"));
+       testSimpleVoExport();
+        workbook = BaseExcelService.getWorkbook(new File("test.xls"));
         Sheet sheet = workbook.getSheet("testSimpleVoExport");
         ImportExcelService service = new ImportExcelService(SchoolCourse.class, sheet);
         service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
         List list = service.doImport();
         List list2 = service.getErrorList();
+        FileOutputStream fos = new FileOutputStream("test00.xls");
+        workbook.write(fos);
+        if(null != fos){
+            fos.close();
+        }
+        System.out.println("成功导入：" + list.size() + "条数据");
+    }
 
-        FileOutputStream fos = new FileOutputStream("D:/test00.xls");
+    /**
+     * 从Excel文件导入到简单对象，不需要对象继承BaseExcelVo
+     * @throws Exception
+     */
+    @Test
+    public void testSimpleClassImport() throws Exception {
+        testSimpleVoExport();
+        workbook = BaseExcelService.getWorkbook(new File("test.xls"));
+        Sheet sheet = workbook.getSheet("testSimpleVoExport");
+        ImportExcelService service = new ImportExcelService(SchoolCourseBase.class, sheet);
+        service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
+        List list = service.doImport();
+        List list2 = service.getErrorList();
+        FileOutputStream fos = new FileOutputStream("test00.xls");
+        workbook.write(fos);
+        if(null != fos){
+            fos.close();
+        }
+        System.out.println("成功导入：" + list.size() + "条数据");
+    }
+
+    @Test
+    public void testSimpleMapImport() throws Exception {
+        testSimpleVoExport();
+        workbook = BaseExcelService.getWorkbook(new File("test.xls"));
+        Sheet sheet = workbook.getSheet("testSimpleVoExport");
+        ImportExcelService service = new ImportExcelService(HashMap.class, sheet,"id","courseName");
+        service.addDic("KCLX", "1", "国家课程").addDic("KCLX", "2", "学校课程");//设置数据字典
+        List list = service.doImport();
+        List list2 = service.getErrorList();
+        FileOutputStream fos = new FileOutputStream("test00.xls");
         workbook.write(fos);
         if(null != fos){
             fos.close();

@@ -16,6 +16,7 @@
  */
 package org.jplus.hyberbin.excel.annotation;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -42,4 +43,26 @@ public @interface ExcelVoConfig {
     /**验证
      * @return 类*/
     Class validateClass() default DefaultValidateAdapter.class;
+
+    public static ExcelVoConfig defaultConfig=new ExcelVoConfig(){
+        @Override
+        public Class<? extends Annotation> annotationType() {
+            return ExcelVoConfig.class;
+        }
+
+        @Override
+        public Class<? extends IOAdapter> outputFactory() {
+            return DefaultOutputAdapter.class;
+        }
+
+        @Override
+        public Class<? extends IOAdapter> inputFactory() {
+            return DefaultInputAdapter.class;
+        }
+
+        @Override
+        public Class validateClass() {
+            return DefaultValidateAdapter.class;
+        }
+    };
 }

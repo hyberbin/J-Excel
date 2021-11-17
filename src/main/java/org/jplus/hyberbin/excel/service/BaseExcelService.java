@@ -18,16 +18,16 @@ package org.jplus.hyberbin.excel.service;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.poifs.filesystem.FileMagic;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jplus.hyberbin.excel.utils.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.Objects;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BaseExcelService {
     protected Logger log = LoggerFactory.getLogger(getClass());
+    private static Logger logger = LoggerFactory.getLogger(BaseExcelService.class);
     /**存放Hash密码的行*/
     public final static int HASH_ROW=0;
     /**标题行*/
@@ -101,7 +102,7 @@ public class BaseExcelService {
                 newstyle.cloneStyleFrom(style);
             }
             newstyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-            newstyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+            newstyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             cell.setCellStyle(newstyle);
         }
     }
@@ -139,8 +140,8 @@ public class BaseExcelService {
             sheetRow.createCell(i);
         }
         CellStyle style = sheet.getWorkbook().createCellStyle(); // 样式对象
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 垂直
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);// 水平
+        style.setVerticalAlignment(VerticalAlignment.CENTER);// 垂直
+        style.setAlignment(HorizontalAlignment.CENTER);// 水平
         CellRangeAddress cellRangeAddress = new CellRangeAddress(row, row, 0, length - 1);
         sheet.addMergedRegion(cellRangeAddress);
         Cell cell = sheetRow.getCell(0);
@@ -231,7 +232,27 @@ public class BaseExcelService {
      * @return
      */
     public static Workbook createWorkbook(){
-        return new HSSFWorkbook();
+        return new XSSFWorkbook();
+    }
+
+    /**
+     * 创建一个文件
+     * @return
+     */
+    public static Workbook getWorkbook(File file){
+        try(BufferedInputStream bis=new BufferedInputStream(new FileInputStream(file))){
+            FileMagic fileMagic = FileMagic.valueOf(bis);
+            if(Objects.equals(fileMagic,FileMagic.OLE2)){
+                return new HSSFWorkbook(new FileInputStream(file));
+            }else if(Objects.equals(fileMagic,FileMagic.OOXML)){
+                return new XSSFWorkbook(new FileInputStream(file));
+            }else {
+                logger.warn("根据文件流无法识别到Excel文件的格式,默认按XSSF返回");
+                return new XSSFWorkbook(new FileInputStream(file));
+            }
+        }catch (IOException e){
+            throw new RuntimeException("打开Excel文件出错");
+        }
     }
 
     /**

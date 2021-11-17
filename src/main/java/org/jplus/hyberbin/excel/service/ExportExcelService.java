@@ -265,11 +265,11 @@ public class ExportExcelService<T extends BaseExcelVo> extends BaseExcelService 
                         getSimpleField(fieldBean, t, rowdata, dataRowIndex, cloIndex, dataBean);
                         cloIndex++;
                     } else if (fieldBean.getFieldType() == FieldType.BAS_ARRAY) {
-                        GroupConfig group = groupConfig.get(fieldBean.getField().getName());
+                        GroupConfig group = groupConfig.get(fieldBean.getFieldName());
                         getBasArrayField(fieldBean, t, rowdata, dataRowIndex, cloIndex, dataBean, group);
                         cloIndex += group.getLength();
                     } else if (fieldBean.getFieldType() == FieldType.ColumnGroup_ARRAY) {
-                        GroupConfig group = groupConfig.get(fieldBean.getField().getName());
+                        GroupConfig group = groupConfig.get(fieldBean.getFieldName());
                         getColumnGroupField(fieldBean, t, rowdata, dataRowIndex, cloIndex, dataBean, group);
                         cloIndex += (group.getLength() * group.getGroupSize());
                     }
@@ -296,8 +296,8 @@ public class ExportExcelService<T extends BaseExcelVo> extends BaseExcelService 
      * @throws ColumnErrorException
      */
     protected void getColumnGroupField(FieldBean fieldBean, BaseExcelVo excelVo, Row rowData, int row, int index, DataBean dataBean, GroupConfig group) throws AdapterException, ColumnErrorException {
-        DataBean childDataBean = dataBean.getChildDataBean(fieldBean.getField().getName());
-        List<BaseExcelVo> childVo = (List<BaseExcelVo>) dataBean.getFieldValue(fieldBean.getField().getName(), excelVo);
+        DataBean childDataBean = dataBean.getChildDataBean(fieldBean.getFieldName());
+        List<BaseExcelVo> childVo = (List<BaseExcelVo>) dataBean.getFieldValue(fieldBean.getFieldName(), excelVo);
         if (childVo == null) {
             return;
         }
@@ -311,10 +311,10 @@ public class ExportExcelService<T extends BaseExcelVo> extends BaseExcelService 
                         if (childFieldBean.getFieldType() == FieldType.BASIC) {
                             getSimpleField(childFieldBean, baseExcelVo, rowData, row, index + r * size+i, childDataBean);
                         } else if (childFieldBean.getFieldType() == FieldType.BAS_ARRAY) {
-                            GroupConfig childGroup = groupConfig.get(childFieldBean.getField().getName());
+                            GroupConfig childGroup = groupConfig.get(childFieldBean.getFieldName());
                             getBasArrayField(childFieldBean, baseExcelVo, rowData, row, index + r * size+i, childDataBean, childGroup);
                         } else if (childFieldBean.getFieldType() == FieldType.ColumnGroup_ARRAY) {
-                            GroupConfig childGroup = groupConfig.get(childFieldBean.getField().getName());
+                            GroupConfig childGroup = groupConfig.get(childFieldBean.getFieldName());
                             getColumnGroupField(childFieldBean, baseExcelVo, rowData, row, index + r * size+i, childDataBean, childGroup);
                         }
                     }
@@ -338,7 +338,7 @@ public class ExportExcelService<T extends BaseExcelVo> extends BaseExcelService 
     protected void getBasArrayField(FieldBean fieldBean, BaseExcelVo excelVo, Row rowData, int row, int index, DataBean dataBean, GroupConfig group) throws AdapterException, ColumnErrorException {
         Method outputMethod = fieldBean.getOutputMethod();
         outputMethod = outputMethod == null ? defaultAdapterMethod : outputMethod;
-        String fieldName = fieldBean.getField().getName();
+        String fieldName = fieldBean.getFieldName();
         List fieldValue = (List) dataBean.getFieldValue(fieldName, excelVo);
         if (ObjectHelper.isEmpty(fieldValue)) {
             return;
@@ -373,20 +373,20 @@ public class ExportExcelService<T extends BaseExcelVo> extends BaseExcelService 
     protected void getSimpleField(FieldBean fieldBean, BaseExcelVo excelVo, Row rowData, int row, int index, DataBean dataBean) throws AdapterException, ColumnErrorException {
         Method outputMethod = fieldBean.getOutputMethod();
         outputMethod = outputMethod == null ? defaultAdapterMethod : outputMethod;
-        Object fieldValue = dataBean.getFieldValue(fieldBean.getField().getName(), excelVo);
+        Object fieldValue = dataBean.getFieldValue(fieldBean.getFieldName(), excelVo);
         if (ObjectHelper.isNullOrEmptyString(fieldValue)) {
             return;
         }
         try {
             excelVo.setCol(index);
-            AdapterUtil.invokeOutputAdapterMethod(outputFactory, outputMethod, dataBean, fieldValue, fieldBean.getField().getName(), getCell(rowData, index));
+            AdapterUtil.invokeOutputAdapterMethod(outputFactory, outputMethod, dataBean, fieldValue, fieldBean.getFieldName(), getCell(rowData, index));
         } catch (Exception e) {
-            log.error("ExportExcelService:getSimpleField，FieldName:{}出错", e, fieldBean.getField().getName());
+            log.error("ExportExcelService:getSimpleField，FieldName:{}出错", e, fieldBean.getFieldName());
             if (e instanceof AdapterException) {
                 errorList.add(row, excelVo);
                 throw (AdapterException) e;
             } else {
-                throw new ColumnErrorException(row + 1, fieldBean.getField().getName(), Message.COLUMN_ERROR);
+                throw new ColumnErrorException(row + 1, fieldBean.getFieldName(), Message.COLUMN_ERROR);
             }
         }
     }

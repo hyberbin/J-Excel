@@ -16,23 +16,17 @@
  */
 package org.jplus.hyberbin.excel.bean;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jplus.hyberbin.excel.annotation.ExcelColumnGroup;
 import org.jplus.hyberbin.excel.annotation.output.OutputTargetConfig;
 import org.jplus.hyberbin.excel.exception.AdapterException;
-import org.jplus.hyberbin.excel.utils.AdapterConstant;
-import org.jplus.hyberbin.excel.utils.ConverString;
-import org.jplus.hyberbin.excel.utils.Message;
-import org.jplus.hyberbin.excel.utils.ObjectHelper;
-import org.jplus.hyberbin.excel.utils.Reflections;
+import org.jplus.hyberbin.excel.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * 一个Sheet的数据模型
@@ -65,55 +59,66 @@ public class DataBean {
     private DataBean fatherDataBean;
 
     public DataBean(Class excelVo, Class inputAdapter, Class outputAdapter, Class validateAdapter) {
-        this(Reflections.getAllFields(excelVo, BaseExcelVo.class), inputAdapter, outputAdapter, validateAdapter);
+        this(Map.class.isAssignableFrom(excelVo) ? Collections.<Field>emptyList() : Reflections.getAllFields(excelVo, BaseExcelVo.class), inputAdapter, outputAdapter, validateAdapter);
     }
 
-    public DataBean(List<Field> filedList, Class inputAdapter, Class outputAdapter, Class validateAdapter) {
+    public DataBean(List filedList, Class inputAdapter, Class outputAdapter, Class validateAdapter) {
         this.inputAdapter = inputAdapter;
         this.outputAdapter = outputAdapter;
         this.validateAdapter = validateAdapter;
-        for(Field field:filedList){
-            if(field.isAnnotationPresent(OutputTargetConfig.class)){
-                targetField.put(field.getName().toLowerCase(),field);
-                continue;
-            }
-            this.filedList.add(field);
-        }
-        filedNames=new String[this.filedList.size()];
-        if (ObjectHelper.isNotEmpty(this.filedList)) {
-            for (int i = 0; i < this.filedList.size(); i++) {
-                FieldBean fieldBean;
-                Field field = this.filedList.get(i);
-                filedNames[i]=field.getName();
-                if (Collection.class.isAssignableFrom(field.getType())) {
-                    ExcelColumnGroup annotation = field.getAnnotation(ExcelColumnGroup.class);
-                    if (BaseExcelVo.class.isAssignableFrom(annotation.type())) {
-                        DataBean dataBean = new DataBean(Reflections.getAllFields(annotation.type(), BaseExcelVo.class), inputAdapter, outputAdapter, validateAdapter);
-                        dataBean.fatherDataBean = this;
-                        dataBeanMap.put(field.getName().toLowerCase(), dataBean);
-                        fieldBean = new FieldBean(FieldType.ColumnGroup_ARRAY, field);
+        if(CollectionUtils.isNotEmpty(filedList)){
+            filedNames=new String[filedList.size()];
+            if(filedList.get(0) instanceof Field){
+                for(Object fieldo:filedList){
+                    Field field=(Field) fieldo;
+                    if(field.isAnnotationPresent(OutputTargetConfig.class)){
+                        targetField.put(field.getName().toLowerCase(),field);
+                        continue;
+                    }
+                    this.filedList.add(field);
+                }
+                for (int i = 0; i < this.filedList.size(); i++) {
+                    FieldBean fieldBean;
+                    Field field = this.filedList.get(i);
+                    filedNames[i]=field.getName();
+                    if (Collection.class.isAssignableFrom(field.getType())) {
+                        ExcelColumnGroup annotation = field.getAnnotation(ExcelColumnGroup.class);
+                        if (BaseExcelVo.class.isAssignableFrom(annotation.type())) {
+                            DataBean dataBean = new DataBean(Reflections.getAllFields(annotation.type(), BaseExcelVo.class), inputAdapter, outputAdapter, validateAdapter);
+                            dataBean.fatherDataBean = this;
+                            dataBeanMap.put(field.getName().toLowerCase(), dataBean);
+                            fieldBean = new FieldBean(FieldType.ColumnGroup_ARRAY, field);
+                        } else {
+                            fieldBean = new FieldBean(FieldType.BAS_ARRAY, field);
+                        }
                     } else {
-                        fieldBean = new FieldBean(FieldType.BAS_ARRAY, field);
+                        fieldBean = new FieldBean(FieldType.BASIC, field);
                     }
-                } else {
-                    fieldBean = new FieldBean(FieldType.BASIC, field);
-                }
-                Annotation[] annotations = field.getDeclaredAnnotations();
-                for (Annotation annotation : annotations) {
-                    log.debug("has annotation:{}",annotation.annotationType().getSimpleName());
-                    if (AdapterConstant.inputConfigs.contains(annotation.annotationType().getSimpleName())) {
-                        fieldBean.setInputConfig(annotation);
-                        if (inputAdapter != null) fieldBean.setInputMethod(inputAdapter);
-                    } else if (AdapterConstant.outputConfigs.contains(annotation.annotationType().getSimpleName())) {
-                        fieldBean.setOutputConfig(annotation);
-                        if (outputAdapter != null) fieldBean.setOutputMethod(outputAdapter);
-                    } else if (AdapterConstant.validateConfigs.contains(annotation.annotationType().getSimpleName())) {
-                        fieldBean.setValidateConfig(annotation);
-                        if (validateAdapter != null) fieldBean.setValidateMethod(validateAdapter);
+                    Annotation[] annotations = field.getDeclaredAnnotations();
+                    for (Annotation annotation : annotations) {
+                        log.debug("has annotation:{}",annotation.annotationType().getSimpleName());
+                        if (AdapterConstant.inputConfigs.contains(annotation.annotationType().getSimpleName())) {
+                            fieldBean.setInputConfig(annotation);
+                            if (inputAdapter != null) fieldBean.setInputMethod(inputAdapter);
+                        } else if (AdapterConstant.outputConfigs.contains(annotation.annotationType().getSimpleName())) {
+                            fieldBean.setOutputConfig(annotation);
+                            if (outputAdapter != null) fieldBean.setOutputMethod(outputAdapter);
+                        } else if (AdapterConstant.validateConfigs.contains(annotation.annotationType().getSimpleName())) {
+                            fieldBean.setValidateConfig(annotation);
+                            if (validateAdapter != null) fieldBean.setValidateMethod(validateAdapter);
+                        }
                     }
+                    fieldMap.put(field.getName().toLowerCase(), fieldBean);
+                    fieldBeanList.add(fieldBean);
                 }
-                fieldMap.put(field.getName().toLowerCase(), fieldBean);
-                fieldBeanList.add(fieldBean);
+            }else {
+                filedNames = (String[]) filedList.toArray(new String[]{});
+                this.filedList=filedList;
+                for(String field:filedNames){
+                    FieldBean fieldBean = new FieldBean(FieldType.BASIC, field);
+                    fieldMap.put(field.toLowerCase(), fieldBean);
+                    fieldBeanList.add(fieldBean);
+                }
             }
         }
     }
@@ -139,6 +144,9 @@ public class DataBean {
     }
 
     public Object getFieldValue(String fieldName, Object excelVo) throws AdapterException {
+        if(excelVo instanceof Map){
+            return ((Map) excelVo).get(fieldName);
+        }
         FieldBean fieldBean = fieldMap.get(fieldName.toLowerCase());
         try {
             Object o = useGetterSetter ? Reflections.invokeGetter(excelVo, fieldName) : fieldBean.getField().get(excelVo);
@@ -151,7 +159,13 @@ public class DataBean {
             throw new AdapterException(fieldName, Message.FIELD_GET_ERROR);
         }
     }
+
     public void setTargetFieldValue(String fieldName, Object excelVo, Object value)throws AdapterException{
+        if(excelVo instanceof Map){
+            Map map=(Map) excelVo;
+            map.put(fieldName,value);
+            return;
+        }
         Field field = targetField.get(fieldName.toLowerCase());
         if(field==null){
             log.error("找不到TargetField");
@@ -184,7 +198,10 @@ public class DataBean {
         }
         if(value!=null &&value instanceof String&& ObjectHelper.isNullOrEmptyString(value)&&!fieldBean.isNullAble()){
             throw new AdapterException(fieldName, Message.FIELD_NULL_ERROR);
-        }else if(value!=null){
+        } else if (excelVo instanceof Map) {
+            Map map = (Map) excelVo;
+            map.put(fieldName, value);
+        } else if (value != null) {
             try {
                 if (useGetterSetter) {
                     Reflections.invokeSetter(excelVo, fieldName, value);

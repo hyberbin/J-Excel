@@ -29,6 +29,7 @@ import org.jplus.hyberbin.excel.utils.AdapterUtil;
  */
 public class FieldBean {
     private Field field;
+    private String fieldName;
     /**输入适配器配置*/
     private Annotation inputConfig;
     /**输出适配器配置*/
@@ -43,6 +44,7 @@ public class FieldBean {
     private Method validateMethod;
     /**字段类型 简单、简单循环、复杂循环*/
     private FieldType fieldType;
+    private Class fieldValueType;
     /**该字段的最后一次值*/
     private Object lastValue;
     /**是否默认为上一次的值*/
@@ -53,10 +55,22 @@ public class FieldBean {
     public FieldBean(FieldType fieldType,Field field) {
         this.field = field;
         this.fieldType=fieldType;
+        this.fieldName = field.getName();
+        this.fieldValueType=field.getType();
+    }
+
+    public FieldBean(FieldType fieldType,String fieldName) {
+        this.fieldName = fieldName;
+        this.fieldType=fieldType;
+        this.fieldValueType=String.class;
     }
 
     public Field getField() {
         return field;
+    }
+
+    public String getFieldName() {
+        return fieldName;
     }
 
     public void setField(Field field) {
@@ -115,6 +129,10 @@ public class FieldBean {
     } 
     public FieldType getFieldType() {
         return fieldType;
+    }
+
+    public Class getFieldValueType() {
+        return fieldValueType;
     }
 
     public Object getLastValue() {

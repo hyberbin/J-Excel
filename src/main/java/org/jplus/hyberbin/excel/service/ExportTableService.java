@@ -17,10 +17,8 @@
 package org.jplus.hyberbin.excel.service;
 
 import java.util.Collection;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.jplus.hyberbin.excel.bean.CellBean;
 import org.jplus.hyberbin.excel.bean.TableBean;
@@ -74,10 +72,10 @@ public class ExportTableService extends BaseExcelService {
                     cellStyle=sheet.getWorkbook().createCellStyle();
                 }
                 if(cellBean.isAlignCenter()){
-                    cellStyle.setAlignment(CellStyle.ALIGN_CENTER);//水平居中
+                    cellStyle.setAlignment(HorizontalAlignment.CENTER);//水平居中
                 }
                 if(cellBean.isVerticalCenter()){
-                    cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);//垂直居中
+                    cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);//垂直居中
                 }
                 cellStyle.setWrapText(cellBean.isWrapText());
                 cell.setCellStyle(cellStyle);

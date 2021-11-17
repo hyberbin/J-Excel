@@ -1,47 +1,31 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-data.db
+**/pom.xml.versionsBackup
+**/target/
+**/out/
+# **/log/
+*.class
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+.idea/
+/nbproject
+*.ipr
+*.iws
 *.iml
 
-# Folder config file
-Desktop.ini
+# Package Files #
+# *.jar
+*.war
+*.ear
+*.log
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+velocity.log
+velocity.log.*
+**/transaction-logs/
+!/.mvn/wrapper/maven-wrapper.jar
+# /data/
+*.db
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-target/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# =========================
-# Operating System Files
-# =========================
-
-# OSX
-# =========================
-
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
+**/.flattened-pom.xml
+**/dependency-reduced-pom.xml
+**/pom.xml.*
+*..DS_Store

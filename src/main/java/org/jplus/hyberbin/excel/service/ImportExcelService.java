@@ -16,35 +16,24 @@
  */
 package org.jplus.hyberbin.excel.service;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.jplus.hyberbin.excel.adapter.IOAdapter;
 import org.jplus.hyberbin.excel.annotation.ExcelColumnGroup;
 import org.jplus.hyberbin.excel.annotation.ExcelVoConfig;
-import org.jplus.hyberbin.excel.bean.BaseExcelVo;
-import org.jplus.hyberbin.excel.bean.ColumnBean;
-import org.jplus.hyberbin.excel.bean.DataBean;
-import org.jplus.hyberbin.excel.bean.FieldBean;
-import org.jplus.hyberbin.excel.bean.FieldType;
-import org.jplus.hyberbin.excel.bean.GroupConfig;
+import org.jplus.hyberbin.excel.bean.*;
 import org.jplus.hyberbin.excel.exception.AdapterException;
 import org.jplus.hyberbin.excel.exception.ColumnErrorException;
 import org.jplus.hyberbin.excel.exception.ExcelHeaderErrorException;
 import org.jplus.hyberbin.excel.exception.ExcelVoErrorException;
 import org.jplus.hyberbin.excel.json.JsonUtil;
-import org.jplus.hyberbin.excel.utils.AdapterUtil;
-import org.jplus.hyberbin.excel.utils.DicCodePool;
-import org.jplus.hyberbin.excel.utils.Message;
-import org.jplus.hyberbin.excel.utils.ObjectHelper;
-import org.jplus.hyberbin.excel.utils.Reflections;
+import org.jplus.hyberbin.excel.utils.*;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * 默认：
@@ -58,9 +47,9 @@ import org.jplus.hyberbin.excel.utils.Reflections;
  * Time: 下午4:01
  * @param <T>
  */
-public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService {
+public class ImportExcelService<T> extends BaseExcelService {
     protected final Class<T> voClass;
-    protected final List<Field> fieldList = new ArrayList<Field>();
+    protected final List fieldList = new ArrayList<>();
     protected final DicCodePool dicCodePool;
     protected final Sheet sheet;
     protected final DataBean dataBean;
@@ -81,11 +70,14 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
      * @param sheet
      * @throws java.lang.Exception
      */
-    public ImportExcelService(Class<T> voClass, Sheet sheet) throws Exception {
+    public ImportExcelService(Class<T> voClass, Sheet sheet,String... fieldNames) throws Exception {
         if (voClass.isAnnotationPresent(ExcelVoConfig.class)) {
             config = voClass.getAnnotation(ExcelVoConfig.class);
         } else {
-            throw new ExcelVoErrorException(voClass.getClass(), Message.EXCEL_VO_ERROR);
+            config=ExcelVoConfig.defaultConfig;
+        }
+        if(fieldNames!=null&&fieldNames.length>0){
+            fieldList.addAll(Arrays.asList(fieldNames));
         }
         this.voClass = voClass;
         this.sheet = sheet;
@@ -154,7 +146,7 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
                 }else{
                     noNameGroup.addField(field);
                 }
-            }else {
+            }else if (!Map.class.isAssignableFrom(voClass)){
                 Field accessibleField = Reflections.getAccessibleField(voClass, columnBean.getColumnName());
                 if(accessibleField==null){
                     log.error("{}找不到指定的字段{}",voClass.getSimpleName(),columnBean.getColumnName());
@@ -191,11 +183,11 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
                     setSimpleField(fieldBean, excelVo, sheetRow, row, cloIndex, dataBean);
                     cloIndex++;
                 } else if (fieldBean.getFieldType() == FieldType.BAS_ARRAY) {
-                    GroupConfig groupConfig = this.groupConfig.get(fieldBean.getField().getName());
+                    GroupConfig groupConfig = this.groupConfig.get(fieldBean.getFieldName());
                     setBasArrayField(fieldBean, excelVo, sheetRow, row, cloIndex + indexClo, dataBean,groupConfig);
                     cloIndex+=groupConfig.getRealLength();
                 } else if (fieldBean.getFieldType() == FieldType.ColumnGroup_ARRAY) {
-                    GroupConfig groupConfig = this.groupConfig.get(fieldBean.getField().getName());
+                    GroupConfig groupConfig = this.groupConfig.get(fieldBean.getFieldName());
                     setColumnGroupField(fieldBean, excelVo, sheetRow, row, cloIndex + indexClo, dataBean,groupConfig);
                     cloIndex+=groupConfig.getRealLength()*groupConfig.getGroupSize();
                 }
@@ -217,12 +209,12 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
      * @throws AdapterException
      * @throws ColumnErrorException
      */
-    private void setColumnGroupField(FieldBean fieldBean, BaseExcelVo excelVo, Row sheetRow, int row, int index, DataBean dataBean,GroupConfig groupConfig) throws AdapterException, ColumnErrorException {
+    private void setColumnGroupField(FieldBean fieldBean, Object excelVo, Row sheetRow, int row, int index, DataBean dataBean,GroupConfig groupConfig) throws AdapterException, ColumnErrorException {
         ExcelColumnGroup annotation = fieldBean.getField().getAnnotation(ExcelColumnGroup.class);
         Integer length = groupConfig.getRealLength();
         List list = new ArrayList();
         List<String> fieldNames = groupConfig.getFieldNames();
-        DataBean childDataBean = dataBean.getChildDataBean(fieldBean.getField().getName());
+        DataBean childDataBean = dataBean.getChildDataBean(fieldBean.getFieldName());
         int childSize=fieldNames.size();
         for (int i = 0; i < length; i++) {//循环体外
             try {
@@ -233,10 +225,10 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
                     if (childFieldBean.getFieldType() == FieldType.BASIC) {
                         setSimpleField(childFieldBean, baseColumnGroup, sheetRow, row, index+i*childSize+j, childDataBean);
                     } else if (childFieldBean.getFieldType() == FieldType.BAS_ARRAY) {
-                        GroupConfig childGroupConfig = this.groupConfig.get(childFieldBean.getField().getName());
+                        GroupConfig childGroupConfig = this.groupConfig.get(childFieldBean.getFieldName());
                         setBasArrayField(childFieldBean, baseColumnGroup, sheetRow, row, index+i*childSize, childDataBean,childGroupConfig);
                     } else if (childFieldBean.getFieldType() == FieldType.ColumnGroup_ARRAY) {
-                        GroupConfig childGroupConfig = this.groupConfig.get(childFieldBean.getField().getName());
+                        GroupConfig childGroupConfig = this.groupConfig.get(childFieldBean.getFieldName());
                         setColumnGroupField(childFieldBean, baseColumnGroup, sheetRow, row,index+i*childSize, childDataBean,childGroupConfig);
                     }
                 }
@@ -247,7 +239,7 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
                 throw new ColumnErrorException(row+1, index+1, Message.COLUMN_ERROR);
             }
         }
-        dataBean.setFieldValue(fieldBean.getField().getName(), excelVo, list);
+        dataBean.setFieldValue(fieldBean.getFieldName(), excelVo, list);
     }
 
     /**
@@ -261,7 +253,7 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
      * @throws AdapterException
      * @throws ColumnErrorException
      */
-    private void setBasArrayField(FieldBean fieldBean, BaseExcelVo excelVo, Row sheetRow, int row, int index, DataBean dataBean,GroupConfig groupConfig) throws AdapterException, ColumnErrorException {
+    private void setBasArrayField(FieldBean fieldBean, Object excelVo, Row sheetRow, int row, int index, DataBean dataBean,GroupConfig groupConfig) throws AdapterException, ColumnErrorException {
         ExcelColumnGroup annotation = fieldBean.getField().getAnnotation(ExcelColumnGroup.class);
         Integer length = groupConfig.getRealLength();
         Method inputMethod = fieldBean.getInputMethod();
@@ -271,8 +263,10 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
             Cell cell=null;
             try {
                 cell = getCell(sheetRow, i + index);
-                excelVo.setCol(i + index);
-                Object o = AdapterUtil.invokeInputAdapterMethod(inputFactory, inputMethod,dataBean, annotation.type(), fieldBean.getField().getName(), cell);
+                if(excelVo instanceof BaseExcelVo){
+                    ((BaseExcelVo)excelVo).setCol(i + index);
+                }
+                Object o = AdapterUtil.invokeInputAdapterMethod(inputFactory, inputMethod,dataBean, annotation.type(), fieldBean.getFieldName(), cell);
                 list.add(o);
             } catch (Exception e) {
                 setErrorStyle(cell);
@@ -283,7 +277,7 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
                 }
             }
         }
-        dataBean.setFieldValue(fieldBean.getField().getName(), excelVo, list);
+        dataBean.setFieldValue(fieldBean.getFieldName(), excelVo, list);
     }
 
     /**
@@ -297,7 +291,7 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
      * @throws AdapterException
      * @throws ColumnErrorException
      */
-    private void setSimpleField(FieldBean fieldBean, BaseExcelVo excelVo, Row sheetRow, int row, int index, DataBean dataBean) throws AdapterException, ColumnErrorException {
+    private void setSimpleField(FieldBean fieldBean, Object excelVo, Row sheetRow, int row, int index, DataBean dataBean) throws AdapterException, ColumnErrorException {
         Cell cell = getCell(sheetRow, index);
         try {
             ColumnBean columnBean = columnBeanMap.get(index);
@@ -306,10 +300,12 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
             }
             Method inputMethod = fieldBean.getInputMethod();
             inputMethod = inputMethod == null ? defaultAdapterMethod : inputMethod;
-            excelVo.setCol(index);
-            String name = fieldBean.getField().getName();
-            excelVo.setCell(name,cell);
-            Object o = AdapterUtil.invokeInputAdapterMethod(inputFactory, inputMethod,dataBean, fieldBean.getField().getType(), name, cell);
+            String name = fieldBean.getFieldName();
+            if(excelVo instanceof BaseExcelVo){
+                ((BaseExcelVo)excelVo).setCol(index);
+                ((BaseExcelVo)excelVo).setCell(name,cell);
+            }
+            Object o = AdapterUtil.invokeInputAdapterMethod(inputFactory, inputMethod,dataBean, fieldBean.getFieldValueType(), name, cell);
             dataBean.setFieldValue(name, excelVo, o);
             log.debug("geted field value:row:{},index:{},name:{},value:{}",row,index,name,o);
         } catch (Exception e) {
@@ -317,52 +313,77 @@ public class ImportExcelService<T extends BaseExcelVo> extends BaseExcelService 
             if (e instanceof AdapterException) {
                 throw (AdapterException) e;
             } else {
-                throw new ColumnErrorException(row+1, fieldBean.getField().getName(), Message.COLUMN_ERROR);
+                throw new ColumnErrorException(row+1, fieldBean.getFieldName(), Message.COLUMN_ERROR);
             }
         }
     }
 
     /**
-     * 导入
+     * 导入对象到List,数据如果太多可能会内存溢出
      *
      * @return
      * @throws org.jplus.hyberbin.excel.exception.ExcelVoErrorException
      */
     public List<T> doImport() throws ExcelVoErrorException {
-        List list = new ArrayList();
+        final List list = new ArrayList();
+        doImport(new ObjectHandler<T>() {
+            @Override
+            public void handleObject(T o) {
+                list.add(o);
+            }
+        });
+        return list;
+    }
+
+    /**
+     * 导入数据，逐条处理，内存不会溢出，数据量大建议使用
+     * @param handler
+     * @throws ExcelVoErrorException
+     */
+    public void doImport(ObjectHandler<T> handler) throws ExcelVoErrorException {
         long hasCode=0;
         for (int i = START_ROW; i <= sheet.getLastRowNum(); i++) {
             T t = null;
+            String message=null;
             try {
                 t = voClass.newInstance();
-                t.setRow(i);
                 T row = getRow(i, t, 0);
                 if(row!=null){
-                    if(!row.validate()) {
-                        errorList.add(row);
-                        continue;
+                    if(row instanceof BaseExcelVo){
+                        BaseExcelVo baseExcelVo=(BaseExcelVo) row;
+                        baseExcelVo.setRow(i);
+                        if(!baseExcelVo.validate()) {
+                            errorList.add(row);
+                            continue;
+                        }
                     }
                 }else{
                     continue;//如果返回值为空代表是空行
                 }
-                list.add(row);
+                handler.handleObject(row);
             } catch (ColumnErrorException e) {//Excel表格有错误
                 log.error(e.getMessage(), e);
-                t.setMessage(e.getMessage());
+                message=e.getMessage();
                 errorList.add(t);
             } catch (AdapterException e) {//适配器有错误
                 log.error(e.getMessage(), e);
-                t.setMessage(e.getMessage());
+                message=e.getMessage();
                 errorList.add(t);
             } catch (Exception e) {//实例不能新建
                 ExcelVoErrorException errorException = new ExcelVoErrorException(voClass, Message.VO_INSTANCE_ERROR);
                 log.error(errorException.getMessage(), e);
                 throw errorException;
             }
-            hasCode+=t.getHashVal();
+            if(t instanceof BaseExcelVo) {
+                BaseExcelVo baseExcelVo = (BaseExcelVo) t;
+                hasCode+=baseExcelVo.getHashVal();
+                if(message!=null){
+                    baseExcelVo.setMessage(message);
+                }
+            }
+
         }
         checked=hasCode==hashVal;
-        return list;
     }
 
     public List<T> getErrorList() {

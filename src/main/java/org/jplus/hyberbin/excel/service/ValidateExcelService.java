@@ -109,11 +109,11 @@ public class ValidateExcelService<T extends BaseExcelVo> extends BaseExcelServic
             }
             FieldBean fieldBean = dataBean.getFieldBean(field);
             if(fieldBean.getFieldType()== FieldType.ColumnGroup_ARRAY){
-                GroupConfig group = groupConfig.get(fieldBean.getField().getName());
+                GroupConfig group = groupConfig.get(fieldBean.getFieldName());
                 groupValidate(fieldBean,dataBean,cloIndex,group);
                 cloIndex+=group.getLength()*group.getGroupSize();
             }else if(fieldBean.getFieldType()== FieldType.BAS_ARRAY){
-                GroupConfig group = groupConfig.get(fieldBean.getField().getName());
+                GroupConfig group = groupConfig.get(fieldBean.getFieldName());
                 for(int i=0;i<group.getLength();i++){
                     simpleValidate(t,fieldBean,dataBean,cloIndex);
                     cloIndex++;
@@ -126,7 +126,7 @@ public class ValidateExcelService<T extends BaseExcelVo> extends BaseExcelServic
     }
 
     private void groupValidate(FieldBean fieldBean,DataBean dataBean,int baseIndex,GroupConfig group) throws AdapterException, ExcelVoErrorException {
-        DataBean childDataBean = dataBean.getChildDataBean(fieldBean.getField().getName());
+        DataBean childDataBean = dataBean.getChildDataBean(fieldBean.getFieldName());
         for(int i=0;i<group.getLength();i++){
             int size= ObjectHelper.isEmpty(group.getFieldNames())?group.getGroupSize():group.getFieldNames().size();
             validate(childDataBean.getFiledNames(), childDataBean,baseIndex+i*size);
@@ -144,7 +144,7 @@ public class ValidateExcelService<T extends BaseExcelVo> extends BaseExcelServic
         }
         try {
             baseExcelVo.setCol(baseIndex);
-            AdapterUtil.invokeValidateAdapterMethod(validateFactory, validateMethod,dataBean, sheet, baseIndex, fieldBean.getField().getName());
+            AdapterUtil.invokeValidateAdapterMethod(validateFactory, validateMethod,dataBean, sheet, baseIndex, fieldBean.getFieldName());
         } catch (Exception e) {
             if(e instanceof AdapterException){
                 throw (AdapterException)e;
